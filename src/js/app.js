@@ -58,9 +58,9 @@ App = {
       var candidatesResults = $("#candidatesResults");
       candidatesResults.empty();
 
-      // var candidatesSelect = $('#candidatesSelect');
-      // candidatesSelect.empty();
-
+      var candidatesSelect = $('#candidatesSelect');
+      candidatesSelect.empty();
+      $("#candidateName").val(candidatesCount);
       for (var i = 1; i <= candidatesCount; i++) {
         electionInstance.candidates(i).then(function(candidate) {
           var id = candidate[0];
@@ -71,9 +71,9 @@ App = {
           var candidateTemplate = "<tr><th>" + id + "</th><td>" + name + "</td><td>" + voteCount + "</td></tr>"
           candidatesResults.append(candidateTemplate);
 
-          // Render candidate ballot option
-          // var candidateOption = "<option value='" + id + "' >" + name + "</ option>"
-          // candidatesSelect.append(candidateOption);
+          //Render candidate ballot option
+          var candidateOption = "<option value='" + id + "' >" + name + "</ option>"
+          candidatesSelect.append(candidateOption);
 
         });
       }
@@ -83,27 +83,31 @@ App = {
     }).catch(function(error){
       console.warn(error);
     });
+  },
+
+  castVote: function(){
+    var candidateId = $('#candidatesSelect').val();
+    App.contracts.Election.deployed().then(function(instance){
+      return instance.vote(candidateId, {from: App.account});
+    }).then(function(result){
+      $("#content").hide();
+      $("#loader").hide();
+    }).catch(function(err){
+      console.error(err);
+    });
+  },
+
+  addCandidate: function(){
+    var candidateName = $('#candidateName').val();
+    App.contracts.Election.deployed().then(function(instance){
+      return instance.addCandidate(candidateName);
+    }).then(function(result){
+      $("#content").hide();
+      $("#loader").hide();
+    }).catch(function(err){
+      console.error(err);
+    });
   }
-
-  // bindEvents: function() {
-  //   $(document).on('click', '.btn-adopt', App.handleAdopt);
-  // },
-
-  // markAdopted: function(adopters, account) {
-  //   /*
-  //    * Replace me...
-  //    */
-  // },
-
-  // handleAdopt: function(event) {
-  //   event.preventDefault();
-
-  //   var petId = parseInt($(event.target).data('id'));
-
-  //   /*
-  //    * Replace me...
-  //    */
-  // }
 
 };
 
